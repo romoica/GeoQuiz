@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,7 +18,8 @@ public class GeoQuiz extends Activity {
 
     private Button mTrueButton;
     private Button mFalseButton;
-    private Button mNextButton;
+    private ImageButton mNextButton;
+    private ImageButton mBackButton;
     private TextView mQuestionTextView;
 
     private TrueFalse[] mQuestionBank = new TrueFalse[] {
@@ -36,7 +38,14 @@ public class GeoQuiz extends Activity {
         setContentView(R.layout.activity_geo_quiz);
 
         mQuestionTextView = (TextView)findViewById(R.id.question_text_view);
-        updateQuestion();
+        mQuestionTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "TextView onClick() index=" + mCurrentIndex);
+                updateQuestion(1);
+            }
+        });
+        updateQuestion(0);
 
         mTrueButton = (Button)findViewById(R.id.true_button);
         mTrueButton.setOnClickListener(new View.OnClickListener() {
@@ -53,15 +62,31 @@ public class GeoQuiz extends Activity {
             }
         });
 
+        mNextButton = (ImageButton)findViewById(R.id.next_button);
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                updateQuestion();
+                Log.d(TAG, "nextButton onClick() index=" + mCurrentIndex);
+                updateQuestion(1);
             }
         });
+
+        mBackButton = (ImageButton)findViewById(R.id.back_button);
+        mBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "backButton onClick() index=" + mCurrentIndex);
+                updateQuestion(-1);
+            }
+        });
+
     }
 
-    private void updateQuestion() {
+    private void updateQuestion(int delta) {
+        if ((mCurrentIndex + delta ) < 0 || (mCurrentIndex + delta) > mQuestionBank.length - 1) {
+            return;
+        }
+        mCurrentIndex += delta;
         int question = mQuestionBank[mCurrentIndex].getQuestion();
         mQuestionTextView.setText(question);
     }
@@ -69,7 +94,7 @@ public class GeoQuiz extends Activity {
     private void checkAnswer(boolean userPressedTrue) {
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isTrueQuestion();
 
-        int messageResId = 0;
+        int messageResId;
 
         if (userPressedTrue == answerIsTrue) {
             messageResId = R.string.correct_toast;
@@ -93,10 +118,7 @@ public class GeoQuiz extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return id == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
     @Override
