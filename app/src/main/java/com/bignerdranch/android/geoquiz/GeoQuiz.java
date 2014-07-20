@@ -21,6 +21,7 @@ public class GeoQuiz extends Activity {
     private Button mFalseButton;
     private ImageButton mNextButton;
     private ImageButton mBackButton;
+    private Button mCheatButton;
     private TextView mQuestionTextView;
 
     private TrueFalse[] mQuestionBank = new TrueFalse[] {
@@ -84,6 +85,13 @@ public class GeoQuiz extends Activity {
             }
         });
 
+        mCheatButton = (Button)findViewById(R.id.cheat_button);
+        mCheatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            // Start CheatActivity
+            }
+        });
     }
 
     private void updateQuestion(int delta) {
