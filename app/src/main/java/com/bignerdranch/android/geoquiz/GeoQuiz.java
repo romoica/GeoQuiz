@@ -17,7 +17,7 @@ public class GeoQuiz extends Activity {
 
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
-    private static final String IS_CHEATER_INDEX = "isCheaterIndex";
+    private static final String IS_CHEATER = "isCheaterIndex";
 
     private Button mTrueButton;
     private Button mFalseButton;
@@ -26,8 +26,6 @@ public class GeoQuiz extends Activity {
     private Button mCheatButton;
     private TextView mQuestionTextView;
 
-    private boolean mIsCheater;
-
     private TrueFalse[] mQuestionBank = new TrueFalse[] {
             new TrueFalse(R.string.question_oceans, true),
             new TrueFalse(R.string.question_mideast, false),
@@ -35,6 +33,7 @@ public class GeoQuiz extends Activity {
             new TrueFalse(R.string.question_americas, true),
             new TrueFalse(R.string.question_asia, true)
     };
+    private boolean[] mIsCheater = new boolean[mQuestionBank.length];
     private int mCurrentIndex = 0;
 
     @Override
@@ -44,7 +43,10 @@ public class GeoQuiz extends Activity {
         setContentView(R.layout.activity_geo_quiz);
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
-            mIsCheater = savedInstanceState.getBoolean(IS_CHEATER_INDEX, false);
+            boolean[] temp = savedInstanceState.getBooleanArray(IS_CHEATER);
+            if (temp != null) {
+                mIsCheater = temp;
+            }
         }
 
         mQuestionTextView = (TextView)findViewById(R.id.question_text_view);
@@ -113,7 +115,6 @@ public class GeoQuiz extends Activity {
         }
         mCurrentIndex += delta;
         showQuestion();
-        mIsCheater = false;
     }
 
     private void checkAnswer(boolean userPressedTrue) {
@@ -121,7 +122,7 @@ public class GeoQuiz extends Activity {
 
         int messageResId;
 
-        if (mIsCheater) {
+        if (mIsCheater[mCurrentIndex]) {
             messageResId = R.string.judgment_toast;
         } else {
             if (userPressedTrue == answerIsTrue) {
@@ -185,7 +186,7 @@ public class GeoQuiz extends Activity {
         super.onSaveInstanceState(savedInstanceState);
         Log.i(TAG, "onSaveInstanceState() called");
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
-        savedInstanceState.putBoolean(IS_CHEATER_INDEX, mIsCheater);
+        savedInstanceState.putBooleanArray(IS_CHEATER, mIsCheater);
     }
 
     @Override
@@ -194,6 +195,6 @@ public class GeoQuiz extends Activity {
             return;
         }
         Log.i(TAG, "onActivityResult() called");
-        mIsCheater = data.getBooleanExtra(CheatActivity.EXTRA_ANSWER_SHOWN, false);
+        mIsCheater[mCurrentIndex] = data.getBooleanExtra(CheatActivity.EXTRA_ANSWER_SHOWN, false);
     }
 }
