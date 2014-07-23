@@ -184,8 +184,10 @@ public class GeoQuiz extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data == null) {
+            Log.i(TAG, "onActivityResult() data is null");
             return;
         }
         mIsCheater = data.getBooleanExtra(CheatActivity.EXTRA_ANSWER_SHOWN, false);
+        Log.i(TAG, "onActivityResult() mIsCheater" + mIsCheater);
     }
 }
