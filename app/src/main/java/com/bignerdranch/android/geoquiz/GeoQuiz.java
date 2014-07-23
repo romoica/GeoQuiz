@@ -17,6 +17,7 @@ public class GeoQuiz extends Activity {
 
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
+    private static final String IS_CHEATER_INDEX = "isCheaterIndex";
 
     private Button mTrueButton;
     private Button mFalseButton;
@@ -43,6 +44,7 @@ public class GeoQuiz extends Activity {
         setContentView(R.layout.activity_geo_quiz);
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+            mIsCheater = savedInstanceState.getBoolean(IS_CHEATER_INDEX, false);
         }
 
         mQuestionTextView = (TextView)findViewById(R.id.question_text_view);
@@ -53,7 +55,7 @@ public class GeoQuiz extends Activity {
                 updateQuestion(1);
             }
         });
-        updateQuestion(0);
+        showQuestion();
 
         mTrueButton = (Button)findViewById(R.id.true_button);
         mTrueButton.setOnClickListener(new View.OnClickListener() {
@@ -100,13 +102,17 @@ public class GeoQuiz extends Activity {
         });
     }
 
+    private void showQuestion() {
+        int question = mQuestionBank[mCurrentIndex].getQuestion();
+        mQuestionTextView.setText(question);
+    }
+
     private void updateQuestion(int delta) {
         if ((mCurrentIndex + delta ) < 0 || (mCurrentIndex + delta) > mQuestionBank.length - 1) {
             return;
         }
         mCurrentIndex += delta;
-        int question = mQuestionBank[mCurrentIndex].getQuestion();
-        mQuestionTextView.setText(question);
+        showQuestion();
         mIsCheater = false;
     }
 
@@ -179,15 +185,15 @@ public class GeoQuiz extends Activity {
         super.onSaveInstanceState(savedInstanceState);
         Log.i(TAG, "onSaveInstanceState() called");
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+        savedInstanceState.putBoolean(IS_CHEATER_INDEX, mIsCheater);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data == null) {
-            Log.i(TAG, "onActivityResult() data is null");
             return;
         }
+        Log.i(TAG, "onActivityResult() called");
         mIsCheater = data.getBooleanExtra(CheatActivity.EXTRA_ANSWER_SHOWN, false);
-        Log.i(TAG, "onActivityResult() mIsCheater" + mIsCheater);
     }
 }
