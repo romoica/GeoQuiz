@@ -2,6 +2,8 @@ package com.bignerdranch.android.geoquiz;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -25,6 +27,7 @@ public class GeoQuiz extends Activity {
     private ImageButton mBackButton;
     private Button mCheatButton;
     private TextView mQuestionTextView;
+    private TextView mVersionTextView;
 
     private TrueFalse[] mQuestionBank = new TrueFalse[] {
             new TrueFalse(R.string.question_oceans, true),
@@ -102,6 +105,11 @@ public class GeoQuiz extends Activity {
                 startActivityForResult(i, 0);
             }
         });
+
+        mVersionTextView = (TextView)findViewById(R.id.version_text_view);
+        mVersionTextView.setTypeface(Typeface.create(Typeface.SERIF, Typeface.ITALIC));
+        mVersionTextView.setTextSize(16);
+        mVersionTextView.setText("API Level " + Build.VERSION.SDK_INT);
     }
 
     private void showQuestion() {
